@@ -5,7 +5,7 @@ author        = "sharpcdf"
 description   = "A new awesome nimble package"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["coopy"]
+bin           = @["main"]
 
 
 # Dependencies
