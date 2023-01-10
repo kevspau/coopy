@@ -1,13 +1,15 @@
 import illwill
-
-let langs = ["Nim", "Go", "Python", "C++", "D", "Haxe", "Odin", "Rust"]
+#langs 
+const langs = ["Nim", "Go", "Python", "C++", "D", "Haxe", "Odin", "Rust"]
 var index = 1 #index to choose lang
 
+#exit proc when doing ctrl+c
 proc exit() {.noconv.} =
   illwillDeinit()
   showCursor()
   quit(0)
 
+#frame update to update prompt
 proc update(buf: var TerminalBuffer) =
   buf.clear()
   buf.setForegroundColor(fgWhite, true)
@@ -28,13 +30,14 @@ proc update(buf: var TerminalBuffer) =
         buf.write(2, 3 + 2 * i, v)
       #buf.write(2, 3 + 2 * i, v)
 
+#init before doing anything
 proc init(): TerminalBuffer =
   illwillInit(true, false)
   setControlCHook(exit)
   hideCursor()
   return newTerminalBuffer(terminalWidth(), terminalHeight())
 
-
+#main process
 proc main(buf: var TerminalBuffer) =
   buf.setForegroundColor(fgWhite, true)
   #buf.setBackgroundColor(bgBlack)
@@ -45,6 +48,7 @@ proc main(buf: var TerminalBuffer) =
 var buffer = init()
 main(buffer)
 
+#main loop for managing input and updates
 while true:
   var key = getKey()
 
