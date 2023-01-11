@@ -37,7 +37,7 @@ proc update(buf: var TerminalBuffer, q: string, opt: seq[string]) =
 
 #init before doing anything
 proc init(): TerminalBuffer =
-  illwillInit(false, false)
+  #illwillInit(false, false)
   setControlCHook(forceExit)
   hideCursor()
   var buf = newTerminalBuffer(terminalWidth(), terminalHeight())
@@ -73,6 +73,6 @@ proc prompt*(q: string, options: seq[string]): string =
 
     buffer.update(q, options)
     buffer.display()
-  exit()
+  #exit()
   echo "\n"
   return options[index-1]

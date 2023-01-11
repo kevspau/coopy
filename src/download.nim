@@ -15,13 +15,33 @@ proc download*(lang: string, singlesrc: bool) =
 
     var cwd = getCurrentDir()
     var ext = name.splitFile().ext
-    var cmd: string
-
+    var cmd = if ext == ".zip": "unzip " else: "tar -xf "
+    var filename: string
     setCurrentDir(getAppDir() / "temp")
-    if ext == ".zip":
-        cmd = "unzip "
-    else:
-        cmd = "tar -xf "
     discard execCmd(cmd & name)
+    for f in walkDir(getAppDir() / "temp"):
+        if f.kind == pcFile:
+            removeFile(f.path.splitPath().tail)
+            continue
+        filename = f.path.splitPath().tail
+        break
+
+    setCurrentDir(getAppDir() / "temp" / filename)
+    createDir(getHomeDir() / ".local/share/coopy" / lang)
+    for f in walkDirRec("."):
+        f.copyFileToDir(getHomeDir() / ".local/share/coopy" / lang)
+    setCurrentDir("../..")
+    removeDir("temp")
+    setCurrentDir(getHomeDir() / ".local/share/coopy" / lang)
+    if dirExists("./bin/"):# checks if bin exists, makes symlinks for files in bin/ or base dir if bin/ doesnt exist
+        setCurrentDir("./bin/")
+        for f in walkDirRec("."):
+            f.createSymlink(getHomeDir() / ".local/bin")
+    else:
+        for f in walkDir("."): #every executable in base dir
+            if fpUserExec in getFilePermissions(f.path.splitPath().tail): #if its an executable
+                f.path.splitPath().tail.createSymlink(getHomeDir() / ".local/bin")
+    setCurrentDir(cwd)
+    return
     #TODO rename folder and move it to .local/share, then make symlinks from bin to .local/bin
     
