@@ -7,28 +7,28 @@ const singular = @["Nim", "Haxe", "Odin", "Rust", "NodeJS", "Go"]
 
 proc install() =
     var resp = prompt("What language toolchain would you like to install?", langs)
+    for f in walkDir(getHomeDir() / ".local/share/coopy"):
+        if f.path.splitPath().tail == resp:
+            echo resp & " is already installed."
+            quit(0)
 
     if resp in singular:
         download(resp, true)
-        echo "singular"
 
 proc uninstall() =
     var resp = prompt("What language toolchain would you like to uninstall?", langs)
-    var cwd = getCurrentDir()
-    setCurrentDir(getHomeDir() / ".local/bin")
-    for f in walkDir("."):
+    let bin = getHomeDir() / ".local/bin"
+    let share = getHomeDir() / ".local/share/coopy"
+    for f in walkDir(bin):
         if f.kind != pcLinkToFile:
-            return
-        var file = f.path.splitPath().tail
-        var info = file.expandSymlink()
-        if ".local/share/coopy" / resp in info:
-            removeFile(file)
-    setCurrentDir(getHomeDir() / ".local/share/coopy")
-    removeDir(resp)
-    setCurrentDir(cwd)
+            continue
+        var info = f.path.expandSymlink()
+        if share / resp in info:
+            removeFile(f.path) #TODO 2 doesnt remove haxe symlinks
 
-illwillInit(false, false)
-#TODO 2 figure out how to move to next prompt and fix uninstall
+    removeDir(share / resp)
+    echo "Uninstalled " & resp
+
 var resp = prompt("What action would you like to do?", @["Install language", "Uninstall language", "Update language", "Exit"]).toLower()
 
 if resp == "install language":
@@ -37,7 +37,6 @@ elif resp == "uninstall language":
     uninstall()
 elif resp == "update language":
     echo "not yet young padawan"
-    quit(0)
+    quit()
 else:
     echo "Exiting."
-    quit(0)
