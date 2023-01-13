@@ -46,15 +46,22 @@ proc download*(lang: string, singlesrc: bool) =
             founddir = true
             dir = f]#
     #adds sumlinks
+    var langBin = ""
+    for f in walkDirRec(share / lang):
+        if f.splitPath().tail.toLower() == "bin" and f.getFileInfo().kind == pcDir:
+            langBin = f #!fails for some reason, check out
+            break
+    echo langBin
     #TODO do recursive search for bin/ dir because langs like rust have multiple
-    if dirExists(share / lang / "bin"):# checks if bin exists, makes symlinks for files in bin/ or base dir if bin/ doesnt exist
-        for f in walkDirRec(share / lang / "bin"):
-            if not f.dirExists():#makes sure the exe isnt a folder
+    if langBin != "":# checks if bin exists, makes symlinks for files in bin/ or base dir if bin/ doesnt exist
+        for f in walkDirRec(langBin):
+            if f.getFileInfo().kind != pcDir:#makes sure the exe isnt a folder
+                echo f
                 f.createSymlink(bin / f.splitPath().tail)
     else:
         for f in walkDir(share / lang): #every executable in base dir
-            if fpUserExec in getFilePermissions(share / lang / f.path.splitPath().tail) and not f.path.dirExists(): #if its an executable
-                f.path.splitPath().tail.createSymlink(bin / f.path.splitPath().tail)
+            if fpUserExec in getFilePermissions(share / lang / f.path.splitPath().tail) and f.path.getFileInfo().kind != pcDir: #if its an executable
+                f.path.createSymlink(bin / f.path.splitPath().tail)
             if f.path.splitFile().ext == ext: #makes sure the tarball/zip/etc isnt in the file
                 removeFile(f.path)
     extSpin.success("Successfully installed.")

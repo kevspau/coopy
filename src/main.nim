@@ -24,7 +24,7 @@ proc uninstall() =
             continue
         var info = f.path.expandSymlink()
         if share / resp in info:
-            removeFile(f.path) #TODO 2 doesnt remove haxe symlinks
+            removeFile(f.path)
 
     removeDir(share / resp)
     echo "Uninstalled " & resp
