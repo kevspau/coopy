@@ -8,3 +8,6 @@ update the language versions downloaded by going into `download.nim` and changin
 rebuild by running `nim c src/main.nim`
 
 recommended to manage coopy with [jitter](https://github.com/kevspau/jitter)
+
+
+yea guess what this probably doesnt work :) just a test with illwill
